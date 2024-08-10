@@ -39,7 +39,7 @@ class RedisMqTestApplicationTests {
 		ExecutorService executorService = Executors.newFixedThreadPool(10);
 		CountDownLatch countDownLatch = new CountDownLatch(test);
 
-		couponService.createCoupon("coupon20", 100);
+		long index = couponService.createCoupon("coupon21", 100).getCouponId();
 
 		Random random = new Random();
 
@@ -47,7 +47,7 @@ class RedisMqTestApplicationTests {
 		for(int i=0; i<test; i++){
 			executorService.execute(()->{
 				try{
-					System.out.println(couponService.getCoupons(2000+ random.nextInt(2000), 20));
+					System.out.println(couponService.getCoupons(1001+ random.nextInt(3900), index));
 					successCount.incrementAndGet();
 				}catch (Exception e){
 					failureCount.incrementAndGet();

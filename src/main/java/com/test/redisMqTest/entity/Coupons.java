@@ -36,12 +36,9 @@ public class Coupons {
     }
 
     @JsonIgnore
-    public boolean getCoupon(){
+    public void minusCoupon(){
         if(this.quantity > 0){
             this.quantity -= 1;
-            return true;
-        }else{
-            return false;
         }
     }
 

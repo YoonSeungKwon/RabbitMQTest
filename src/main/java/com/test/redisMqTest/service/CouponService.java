@@ -60,7 +60,7 @@ public class CouponService {
         }
 
         if(coupons.getQuantity() > 0){
-            coupons.getCoupon();
+            coupons.minusCoupon();
             MembersCoupon membersCoupon = MembersCoupon.builder()
                     .coupons(coupons)
                     .members(members)
@@ -80,9 +80,12 @@ public class CouponService {
     @Transactional
     @RabbitListener(queues = "${RABBITMQ_QUEUE_NAME}")
     public void saveCoupon(MembersCoupon dto){
+        Coupons coupons = couponRepository.findCouponsByCouponId(dto.getCoupons().getCouponId());
+        if(coupons.getQuantity() <= 0)
+            return;
+        coupons.minusCoupon();
+        couponRepository.save(coupons);
         membersCouponRepository.save(dto);
-        dto.getCoupons().getCoupon();
-        couponRepository.save(dto.getCoupons());
     }
 
 
