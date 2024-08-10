@@ -1,6 +1,5 @@
 package com.test.redisMqTest.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.redisMqTest.entity.Coupons;
 import com.test.redisMqTest.entity.Members;
 import com.test.redisMqTest.entity.MembersCoupon;
@@ -23,9 +22,6 @@ public class CouponService {
     @Value("${RABBITMQ_EXCHANGE_NAME}")
     private String exchangeName;
 
-    @Value("${RABBITMQ_QUEUE_NAME}")
-    private String queueName;
-
     @Value("${RABBITMQ_ROUTING_KEY}")
     private String routingKey;
 
@@ -40,7 +36,6 @@ public class CouponService {
 
     private final RedisTemplate<String, Coupons> redisTemplate;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
     @CachePut(value = "coupons", key = "#result.couponId")
