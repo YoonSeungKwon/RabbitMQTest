@@ -37,6 +37,10 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
+	// https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter
+	implementation 'org.redisson:redisson-spring-boot-starter:3.34.1'
+
+
 }
 
 tasks.named('test') {
