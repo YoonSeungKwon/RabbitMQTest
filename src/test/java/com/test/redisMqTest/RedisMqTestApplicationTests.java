@@ -6,10 +6,12 @@ import com.test.redisMqTest.repository.MemberRepository;
 import com.test.redisMqTest.repository.MembersCouponRepository;
 import com.test.redisMqTest.service.CouponService;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.Duration;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -37,14 +39,14 @@ class RedisMqTestApplicationTests {
 	@Test
 	public void test() throws InterruptedException {
 
-		int test = 10000;
+		int test = 100;
 
 		AtomicInteger successCount = new AtomicInteger();
 		AtomicInteger failureCount = new AtomicInteger();
-		ExecutorService executorService = Executors.newFixedThreadPool(20);
+		ExecutorService executorService = Executors.newFixedThreadPool(5);
 		CountDownLatch countDownLatch = new CountDownLatch(test);
 
-		long index = couponService.createCoupon("선착순 1000명 20% 할인 쿠폰", 1000).getCouponId();
+		long index = couponService.createCoupon("선착순 1000명 20% 할인 쿠폰", 10).getCouponId();
 
 		Random random = new Random();
 
@@ -77,6 +79,8 @@ class RedisMqTestApplicationTests {
 	void redissonTest(){
 
 		Coupons coupons = couponService.createCoupon("temp2", 100);
+		RBucket<Coupons> rBucket = redissonClient.getBucket("coupons::"+coupons.getCouponId());
+		rBucket.set(coupons, Duration.ofMinutes(1));
 //
 //		RBucket<Coupons> bucket = redissonClient.getBucket("coupons::"+24);
 
