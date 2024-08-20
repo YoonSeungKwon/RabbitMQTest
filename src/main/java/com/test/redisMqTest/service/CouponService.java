@@ -58,6 +58,11 @@ public class CouponService {
 
         RLock rlock = redissonClient.getLock("coupons"+couponId);
 
+        Members members = memberRepository.findMembersByMemberId(memberId);
+        MembersCoupon membersCoupon = MembersCoupon.builder()
+                .members(members)
+                .build();
+
 
         try {
             boolean available = rlock.tryLock(5L, 3L, TimeUnit.SECONDS);
@@ -67,28 +72,14 @@ public class CouponService {
 
             RBucket<Coupons> rBucket = redissonClient.getBucket("coupons::" + couponId);
             Coupons coupons = rBucket.get();
-
-
             if (coupons == null) {
                 coupons = couponRepository.findCouponsByCouponId(couponId);
             }
 
-
             if (coupons.getQuantity() > 0) {
-
-                Members members = memberRepository.findMembersByMemberId(memberId);
-
+                membersCoupon.setCoupons(coupons);
                 coupons.minusCoupon();
                 rBucket.set(coupons, Duration.ofMinutes(10L));
-
-                MembersCoupon membersCoupon = MembersCoupon.builder()
-                        .coupons(coupons)
-                        .members(members)
-                        .build();
-
-                rabbitTemplate.convertAndSend(exchangeName, routingKey, membersCoupon);
-
-                return coupons.getCouponName();
             } else {
                 return "OUT OF ORDERS";
             }
@@ -100,6 +91,8 @@ public class CouponService {
             }
         }
 
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, membersCoupon);
+        return membersCoupon.getCoupons().getCouponName();
     }
 
 
