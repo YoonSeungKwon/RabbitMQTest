@@ -83,11 +83,6 @@ class RedisMqTestApplicationTests {
 
 		QueueInformation queueInfo = rabbitAdmin.getQueueInfo(queueName);
 
-		if(queueInfo == null)
-			System.out.println("남은 메시지: 0개");
-		else {
-			System.out.println("남은 메시지: " + queueInfo.getMessageCount()+"개");
-		}
 
 		System.out.println("Success : "+successCount);
 		System.out.println("Failure : "+failureCount);
